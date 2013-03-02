@@ -33,7 +33,7 @@ class Site:
         return self.__str__()
 
 
-def run_weeder(fasta_file):
+def run_weeder(fasta_file, freqfile = 'HS3P'):
     if not os.path.exists(fasta_file):
         logging.warning("Weeder FASTA file %s not found! Skipping")
         return []
@@ -74,7 +74,7 @@ def run_weeder(fasta_file):
                 outfile.write(apssm.to_mast_string())
                 outfile.write('\n')
 
-    __launch_weeder(fasta_file)
+    __launch_weeder(fasta_file, freqfile)
     pssms = [pssm8 for pssm8 in __read_pssms_for(fasta_file)
              if pssm8.sequence_length() == 8]
     for index in xrange(len(pssms)):
@@ -89,9 +89,9 @@ def run_weeder(fasta_file):
     return pssms
 
 
-def __launch_weeder(fasta_file):
+def __launch_weeder(fasta_file, freqfile):
     """launch weeder command"""
-    command = [LAUNCHER, fasta_file, 'HS3P', 'small', 'T50']
+    command = [LAUNCHER, fasta_file, freqfile, 'small', 'T50']
     retcode = 1
     with open('weeder.log', 'w') as logfile:
         logging.info("running weeder on '%s'", fasta_file)

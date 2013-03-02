@@ -472,7 +472,7 @@ class WeederScoringFunction(MotifScoringFunctionBase):
 
     def meme_runner(self):
         """returns the MEME runner object"""
-        return WeederRunner(self.meme_suite)
+        return WeederRunner(self.meme_suite, seqtype=self.seqtype)
 
 
 class WeederRunner:
@@ -482,7 +482,7 @@ class WeederRunner:
     to generate a MEME run result.
     """
 
-    def __init__(self, meme_suite, background_file=None, remove_tempfiles=True):
+    def __init__(self, meme_suite, background_file=None, remove_tempfiles=True, seqtype='p3utr'):
         """create a runner object"""
         self.meme_suite = meme_suite
         self.__background_file = background_file
@@ -495,8 +495,11 @@ class WeederRunner:
             filename = outfile.name
             logging.info("Run Weeder on FASTA file: '%s'", filename)
             st.write_sequences_to_fasta_file(outfile, params.seqs.items())
-
-        pssms = weeder.run_weeder(filename)
+        if seqtype=='upstream':
+            freqfile = 'HS'
+        elif seqtype=='p3utr':
+            freqfile = 'HS3P'
+        pssms = weeder.run_weeder(filename, freqfile)
         meme_outfile = '%s.meme' % filename
         dbfile = self.meme_suite.make_sequence_file(
             [(feature_id, locseq[1])
